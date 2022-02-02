@@ -21,3 +21,9 @@ Mat.bycol[,2]
 
 #read in weather station file from your data folder
 datW <- read.csv("Z:/students/egshaw/Data/noaa_weather/2011124.csv")
+
+#Question 1: the data frame has 9 columns and 157,849 variables
+#Question 2: Differences between data types
+chr <- (c("a", "b", "c", "hello", "world", "1"))
+nmr <- (c(1, 2, 3, 4, 5, 6))
+fct <- factor(c())
