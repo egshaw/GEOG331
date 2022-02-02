@@ -1,6 +1,9 @@
 # GEOG331 Activity2 Scratch work
 # ES 1/31/22
 
+#set working directory to noaa data folder
+setwd( "Z:/students/egshaw/Data/noaa_weather/ " )
+
 # make a vector of tree heights in meters
 heights <- c(30, 41, 20, 22)
 
@@ -12,3 +15,9 @@ heights_cm
 #first argument is the vector of numbers to fill in the matrix
 Mat<-matrix(c(1,2,3,4,5,6), ncol=2, byrow=TRUE)
 Mat
+Mat.bycol <- matrix(c(1,2,3,4,5,6), ncol=2, byrow = FALSE)
+Mat.bycol[,2]
+
+
+#read in weather station file from your data folder
+datW <- read.csv("Z:/students/egshaw/Data/noaa_weather/2011124.csv")
