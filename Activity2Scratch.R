@@ -26,4 +26,10 @@ datW <- read.csv("Z:/students/egshaw/Data/noaa_weather/2011124.csv")
 #Question 2: Differences between data types
 chr <- (c("a", "b", "c", "hello", "world", "1"))
 nmr <- (c(1, 2, 3, 4, 5, 6))
-fct <- factor(c())
+int <- c(1L, 2L, 3L, 4L, 5L)
+fct <- factor(c("male", "female", "non-binary", "female", "female"))
+
+#find out unique site names
+unique(datW$NAME)
+#look at mean teperature for Aberdeen
+mean(datW$TMAX[datW$NAME == "ABERDEEN, WA US"], na.rm = TRUE)
