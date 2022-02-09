@@ -83,6 +83,9 @@ averageTemp
   #In the main arg, you use paste() to return a string instead of a factor value. 
   # paste() concatenates converted character strings of its argument.
 
+#put four histograms on one page
+par(mfrow=c(2,2))
+
 #make histograms for our data using a for loop
 lvl <- c(1,2,3,4,5)
 for (val in lvl){
@@ -111,4 +114,9 @@ for (val in lvl){
          lty = 3,
          lwd = 3)
 }
-#git log in take 4
+##################################################
+###           Question 5                       ###
+##################################################
+# The data do not appear to all be normally distributed. In particular, Mormon Flat
+#has two concentrations about one standard deviation from the mean. Mandan Experiement
+#station also appears to skew, as well as Morrisville.
