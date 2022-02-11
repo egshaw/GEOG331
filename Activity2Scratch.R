@@ -89,7 +89,7 @@ par(mfrow=c(2,2))
 #make histograms for our data using a for loop
 lvl <- c(1,2,3,4,5)
 for (val in lvl){
-  hist(datW$TAVE[datW$siteN == val],
+  hist(datW$TAVE[(datW$siteN == val)],
        freq=FALSE, 
        main = paste(levels(datW$NAME)[val]),
        xlab = "Average daily temperature (degrees C)", 
@@ -120,3 +120,62 @@ for (val in lvl){
 # The data do not appear to all be normally distributed. In particular, Mormon Flat
 #has two concentrations about one standard deviation from the mean. Mandan Experiement
 #station also appears to skew, as well as Morrisville.
+
+## switching focus to Aberdeen
+x.bar.temp <- mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE)
+sd.temp <- sd(datW$TAVE[datW$siteN == 1],na.rm=TRUE)
+
+##################################################
+###           Question 6                       ###
+##################################################
+thrshld <- (qnorm(0.95, x.bar.temp, sd.temp))
+qsix <- 1 - pnorm(thrshld, x.bar.temp + 4, sd.temp)
+
+##################################################
+###           Question 7                       ###
+##################################################
+prcp <- hist(datW$PRCP[datW$siteN == 1],
+        freq=FALSE, 
+        main = paste(levels(datW$NAME)[1]),
+        xlab = "Average daily precipitation)", 
+        ylab="Relative frequency",
+        col="mintcream",
+        border="snow4")
+# This is most likely gamma distributed, given the visual similarities and that
+#rainfall is often gamma distributed.
+
+##################################################
+###           Question 8                       ###
+##################################################
+datW$dateF <- as.Date(datW$DATE, "%Y-%m-%d")
+datW$year <- as.numeric(format(datW$dateF,"%Y"))
+annual.prcp <- aggregate(datW$PRCP, by = list(datW$year, datW$STATION), FUN = sum, na.rm = TRUE)
+colnames(annual.prcp) <- c("YEARS","STATION", "prcp")
+
+aberdeen.annual.prcp <- hist(annual.prcp$prcp[annual.prcp$STATION == "USC00450008"],
+                        freq=FALSE, 
+                        main = "ABERDEEN, WA US",
+                        xlab = "Average annual precipitation (mm))", 
+                        ylab="Relative frequency",
+                        col="mintcream",
+                        border="snow4")
+#The data could be normally distributed, although there does appear to be a slight skew.
+
+##################################################
+###           Question 9                       ###
+##################################################
+#two ways to get average annual rainfall per station.
+
+output <- list()
+for (i in unique(annual.prcp$STATION)){
+     x.bar.prcp <- mean(annual.prcp$prcp[annual.prcp$STATION == i])
+     output[[i]] <- x.bar.prcp
+}
+output
+
+averagePrcp <- aggregate(annual.prcp, by=list(annual.prcp$STATION), FUN="mean",na.rm=TRUE)
+averagePrcp
+# Aberdeen is the wettest site on average, and Morrisville is the second wettest, as well as the second coldest.
+# Mandan Experiment is the coldest. The hottest two sites also had the least 
+#recorded annual rainfall. Morman Flats, AZ was the hottest and dryest, and Livermore, CA was the
+# second hottest and second dryest.
