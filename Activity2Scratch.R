@@ -177,5 +177,5 @@ averagePrcp <- aggregate(annual.prcp, by=list(annual.prcp$STATION), FUN="mean",n
 averagePrcp
 # Aberdeen is the wettest site on average, and Morrisville is the second wettest, as well as the second coldest.
 # Mandan Experiment is the coldest. The hottest two sites also had the least 
-#recorded annual rainfall. Morman Flats, AZ was the hottest and dryest, and Livermore, CA was the
-# second hottest and second dryest.
+#recorded annual rainfall. Morman Flats, AZ was the hottest and driest, and Livermore, CA was the
+# second hottest and second driest.
