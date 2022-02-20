@@ -4,33 +4,25 @@
 #set working directory to noaa data folder
 setwd( "Z:/students/egshaw/Data/noaa_weather/ " )
 
-# make a vector of tree heights in meters
-heights <- c(30, 41, 20, 22)
-
-#convert to cm
-heights_cm <- heights*100
-heights_cm
-
-#set up a matrix with 2 columns and fill in by rows
-#first argument is the vector of numbers to fill in the matrix
-Mat<-matrix(c(1,2,3,4,5,6), ncol=2, byrow=TRUE)
-Mat
-Mat.bycol <- matrix(c(1,2,3,4,5,6), ncol=2, byrow = FALSE)
-Mat.bycol[,2]
-
-
 #read in weather station file from your data folder
 datW <- read.csv("Z:/students/egshaw/Data/noaa_weather/2011124.csv")
 
-#Question 1: the data frame has 9 columns and 157,849 variables
-#Question 2: Differences between data types
-chr <- (c("a", "b", "c", "hello", "world", "1"))
-nmr <- (c(1, 2, 3, 4, 5, 6))
-int <- c(1L, 2L, 3L, 4L, 5L)
-fct <- factor(c("male", "female", "non-binary", "female", "female"))
+##################################################
+###           Question 1                       ###
+##################################################
 
-#find out unique site names
-unique(datW$NAME)
+#The data frame has 9 columns and 157,849 variables
+
+##################################################
+###           Question 2                       ###
+##################################################
+
+#Differences between data types
+chr <- (c("a", "b", "c", "hello", "world", "1")) #a character vector
+nmr <- (c(1, 2, 3, 4, 5, 6)) #a numeric vector
+int <- c(1L, 2L, 3L, 4L, 5L) #an integer vector
+fct <- factor(c("male", "female", "non-binary", "female", "female")) #a factor vector
+
 #look at mean teperature for Aberdeen
 mean(datW$TMAX[datW$NAME == "ABERDEEN, WA US"], na.rm = TRUE)
 
@@ -39,7 +31,7 @@ datW$TAVE <- datW$TMIN + ((datW$TMAX-datW$TMIN)/2)
 
 #get the mean across all sites using aggregate(x = an r object, by = list of one
   #or more variables to index over, FUN = intended function, ... , na.rm = TRUE to ignore NA)
-#the by function is a list of one or more variables to index over.
+  #the by function is a list of one or more variables to index over.
 
 averageTemp <- aggregate(datW$TAVE, by=list(datW$NAME), FUN="mean",na.rm=TRUE)
 averageTemp
@@ -50,7 +42,7 @@ averageTemp
 datW$NAME <- as.factor (datW$NAME)
 #datW$DATE <- as.factor (datW$DATE)
 
-#siteN converted to factor and then to numeric data
+#siteN converted to numeric data
 datW$siteN <- as.numeric(datW$NAME)
 
 #change the automatic output of column names to be more meaningful
@@ -58,24 +50,11 @@ datW$siteN <- as.numeric(datW$NAME)
 colnames(averageTemp) <- c("NAME","MAAT")
 averageTemp
 
-#make a histogram for the first site in our levels
-#hist(x = vector, 
-  # freq = FALSE, hist represents densities not frequencies
-  # main = title (printed so use factor)
-  # xlab, ylab = axis labels
-  # col = color for fill bars
-  # border = border color)
+##################################################
+###           Question 3                       ###
+##################################################
 
-# hist(datW$TAVE[datW$siteN == 1],
-#     freq=FALSE, 
-#     main = paste(levels(datW$NAME)[1]),
-#     xlab = "Average daily temperature (degrees C)", 
-#     ylab="Relative frequency",
-#     col="grey50",
-#     border="white")
-  #commented out with addition of same histogram but with standard deviation
-
-#Question 3 - first argument sets the vector to be plotted as the averages from
+#The first argument sets the vector to be plotted as the averages from
   #site. freq = FALSE indicates that the data represents densities not frequencies
   #this means that the resulting histogram will return the component densities of 
   # a pdf, (i.e. area sums to 1). main, xlab, and ylab are the title and axis labels
@@ -165,7 +144,6 @@ aberdeen.annual.prcp <- hist(annual.prcp$prcp[annual.prcp$STATION == "USC0045000
 ##################################################
 ###           Question 9                       ###
 ##################################################
-#two ways to get average annual rainfall per station.
 
 output <- list()
 for (i in unique(annual.prcp$STATION)){
@@ -174,8 +152,6 @@ for (i in unique(annual.prcp$STATION)){
 }
 output
 
-averagePrcp <- aggregate(annual.prcp, by=list(annual.prcp$STATION), FUN="mean",na.rm=TRUE)
-averagePrcp
 # Aberdeen is the wettest site on average, and Morrisville is the second wettest, as well as the second coldest.
 # Mandan Experiment is the coldest. The hottest two sites also had the least 
 #recorded annual rainfall. Morman Flats, AZ was the hottest and driest, and Livermore, CA was the
