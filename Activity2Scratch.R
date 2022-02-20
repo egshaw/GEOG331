@@ -87,6 +87,7 @@ averageTemp
 par(mfrow=c(2,2))
 
 #make histograms for our data using a for loop
+clrs <- c("mintcream", "aliceblue", "cornflowerblue", "plum2", "mistyrose")
 lvl <- c(1,2,3,4,5)
 for (val in lvl){
   hist(datW$TAVE[(datW$siteN == val)],
@@ -94,7 +95,7 @@ for (val in lvl){
        main = paste(levels(datW$NAME)[val]),
        xlab = "Average daily temperature (degrees C)", 
        ylab="Relative frequency",
-       col="mintcream",
+       col=clrs[val],
        border="snow4")
   #add mean line with violetred4
   #and thickness of 3
