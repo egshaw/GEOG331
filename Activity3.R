@@ -137,4 +137,14 @@ points(datW$DD[datW$precipitation > 0], datW$precipitation[datW$precipitation > 
 #plot lightning points only when there is lightning     
 points(datW$DD[lightscale > 0], lightscale[lightscale > 0],
        col= "tomato3", pch=19)
-#end of work 2/27 12:38
+
+######################################
+##          Question 5              ##
+######################################
+assert(identical(length(datW$DD),length(lightscale)), "lengths are not equal")
+assert(identical((datW$DD[lightscale > 0]), datW$DD(lightning.acvitivy > 0)), "there are no days with lightning activity")
+# Lightscale is not held in the dataframe. It is derived, however, from the values in
+#the dataframe that directly correspond to Decimal Dates. Lightscale alters the scale
+#of lightning activity values using the max precipitation value so that we can see both 
+#on the same plot. This does not alter the order in any way, so that 
+#end work 2/27 4:00pm
