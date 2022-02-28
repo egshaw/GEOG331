@@ -141,10 +141,28 @@ points(datW$DD[lightscale > 0], lightscale[lightscale > 0],
 ######################################
 ##          Question 5              ##
 ######################################
-assert(identical(length(datW$DD),length(lightscale)), "lengths are not equal")
-assert(identical((datW$DD[lightscale > 0]), datW$DD(lightning.acvitivy > 0)), "there are no days with lightning activity")
+assert(identical((datW$DD[lightscale > 0]), datW$DD[datW$lightning.acvitivy > 0]), 
+       "indexing by lightscale is not equivalent to lightning.acvitivy")
 # Lightscale is not held in the dataframe. It is derived, however, from the values in
-#the dataframe that directly correspond to Decimal Dates. Lightscale alters the scale
-#of lightning activity values using the max precipitation value so that we can see both 
-#on the same plot. This does not alter the order in any way, so that 
-#end work 2/27 4:00pm
+#the dataframe that directly correspond to Decimal Dates. Thus both lightscale and 
+#datW$lightning.actvitivy are both valid indices for datW$DD. We can check this by
+#asserting that (datW$DD[lightscale > 0]) returns identical Decimal Dates to 
+#datW$DD[datW$lightning.acvitivy > 0]).Lightscale alters the scale of lightning 
+# activity values using the max precipitation value so that we can see both on 
+#the same plot. This does not alter the order in any way, so either index works.
+
+#filter out storms air temperature measurements
+#filter all values with lightning that coincides with rainfall greater than 2mm or only rainfall over 5 mm.    
+#create a new air temp column
+datW$air.tempQ2 <- ifelse(datW$precipitation  >= 2 & datW$lightning.acvitivy >0, NA,
+                          ifelse(datW$precipitation > 5, NA, datW$air.tempQ1))
+
+#filter storms out of wind measurements and create a new column
+#filter all values with lightning that coincides with rainfall greater than 2mm or only rainfall over 5 mm. 
+datW$wind.speedQ1 <- ifelse(datW$precipitation  >= 2 & datW$lightning.acvitivy >0, NA,
+                          ifelse(datW$precipitation > 5, NA, datW$wind.speed))
+
+points(datW$DD, datW$wind.speedQ1,
+       col = "tomato3", pch = 16)
+
+#end of work at class time 2/28
