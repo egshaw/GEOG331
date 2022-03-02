@@ -1,3 +1,15 @@
+######################################
+##          Homework 3              ##
+######################################
+#Environmental Data Science - GEOG331
+#Colgate University Spring 2022
+#-------------------------------------
+
+#use install.packages to install lubridate
+#install.packages(c("lubridate"))
+#commented out for convenience of script.
+library(lubridate)
+
 #create a function. The names of the arguments for your function will be in parentheses. Everything in curly brackets will be run each time the function is run.
 assert <- function(statement,err.message){
   #if evaluates if a statement is true or false for a single item
@@ -27,10 +39,6 @@ assert <- function(statement,err.message){
 # likely included because the sensor would return faulty measurements otherwise, it seems
 # likely that in gusty weather, it would be possible to exceed this measurement legitimately.
 
-#use install.packages to install lubridate
-#install.packages(c("lubridate"))
-#commented out for convenience of script.
-library(lubridate)
 
 #read in the data file
 #skip the first 3 rows since there is additional column info
@@ -162,7 +170,8 @@ datW$air.tempQ2 <- ifelse(datW$precipitation  >= 2 & datW$lightning.acvitivy >0,
 datW$wind.speedQ1 <- ifelse(datW$precipitation  >= 2 & datW$lightning.acvitivy >0, NA,
                           ifelse(datW$precipitation > 5, NA, datW$wind.speed))
 
+#plot wind speed when there is precipitation
+plot(datW$DD[datW$precipitation > 0], datW$wind.speedQ1[datW$precipitation > 0], xlab = "Day of Year", ylab = "Quality Controlled Wind Speed",
+     type="n")
 points(datW$DD, datW$wind.speedQ1,
-       col = "tomato3", pch = 16)
-
-#end of work at class time 2/28
+       col = rgb(95/255,158/255,160/255,.5), pch = 15)
