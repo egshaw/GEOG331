@@ -18,6 +18,14 @@ library(ggplot2)
 #3. iris sepal length x petal length
 iris.versi <- iris[iris$Species == "versicolor",]
 
+vars.1 <- c(1, 3, 1) #"Sepal.Length", "Petal.Length", "Sepal.Length"
+vars.2 <- c(2, 4, 3) #"Sepal.Width", "Petal.Width", "Petal.Length"
+
+fits <- list()
+
+for (i in 1:3){
+  fits <- append(fits, (lm ((iris.versi[vars.1[i]) ~ (iris.versi[vars.2[i]))))
+}
 
 vars.1.df <- data.frame(iris.versi$Sepal.Length, iris.versi$Petal.Length, iris.versi$Sepal.Length)
           colnames(vars.1.df) <- c("Sepal.Length", "Petal.Length", "Sepal.Length")
@@ -31,7 +39,7 @@ for (i in 1:3){
           
 # hint: consider using a list, and also new vectors for regression variables
 
-
+#end work
 
 #####################################
 ##### Part 2: data in dplyr     #####
