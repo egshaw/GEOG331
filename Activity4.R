@@ -28,18 +28,18 @@ for (i in 1:3){
 }
 
 vars.1.df <- data.frame(iris.versi$Sepal.Length, iris.versi$Petal.Length, iris.versi$Sepal.Length)
-          colnames(vars.1.df) <- c("Sepal.Length", "Petal.Length", "Sepal.Length")
+colnames(vars.1.df) <- c("Sepal.Length", "Petal.Length", "Sepal.Length")
 vars.2.df <- data.frame(iris.versi$Sepal.Width, iris.versi$Petal.Width, iris.versi$Petal.Length)
-          colnames(vars.2.df) <- c("Sepal.Width", "Petal.Width", "Petal.Length")
+colnames(vars.2.df) <- c("Sepal.Width", "Petal.Width", "Petal.Length")
 
 for (i in 1:3){
   fits[[i]] <-  lm(vars.1.df[,i] ~ vars.2.df[,i])
 }
-          
-          
+
+
 # hint: consider using a list, and also new vectors for regression variables
 
-#end work
+#end work 3/7       
 
 #####################################
 ##### Part 2: data in dplyr     #####
