@@ -24,7 +24,7 @@ vars.2 <- c(2, 4, 3) #"Sepal.Width", "Petal.Width", "Petal.Length"
 fits <- list()
 
 for (i in 1:3){
-  fits <- append(fits, (lm ((iris.versi[vars.1[i]) ~ (iris.versi[vars.2[i]))))
+  fits[[i]] <- lm(iris.versi[vars.1[[i]]] ~ iris.versi[vars.2[[i]]])
 }
 
 vars.1.df <- data.frame(iris.versi$Sepal.Length, iris.versi$Petal.Length, iris.versi$Sepal.Length)
@@ -35,10 +35,6 @@ colnames(vars.2.df) <- c("Sepal.Width", "Petal.Width", "Petal.Length")
 for (i in 1:3){
   fits[[i]] <-  lm(vars.1.df[,i] ~ vars.2.df[,i])
 }
-
-
-# hint: consider using a list, and also new vectors for regression variables
-
 
 
 #####################################
