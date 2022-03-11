@@ -18,14 +18,7 @@ library(ggplot2)
 #3. iris sepal length x petal length
 iris.versi <- iris[iris$Species == "versicolor",]
 
-vars.1 <- c(1, 3, 1) #"Sepal.Length", "Petal.Length", "Sepal.Length"
-vars.2 <- c(2, 4, 3) #"Sepal.Width", "Petal.Width", "Petal.Length"
-
 fits <- list()
-
-for (i in 1:3){
-  fits[[i]] <- lm(iris.versi[vars.1[[i]]] ~ iris.versi[vars.2[[i]]])
-}
 
 vars.1.df <- data.frame(iris.versi$Sepal.Length, iris.versi$Petal.Length, iris.versi$Sepal.Length)
 colnames(vars.1.df) <- c("Sepal.Length", "Petal.Length", "Sepal.Length")
@@ -44,9 +37,9 @@ for (i in 1:3){
 #use dplyr to join data of maximum height
 #to a new iris data frame
 height <- data.frame(Species = c("virginica","setosa","versicolor"),
-                     Height.cm = c(60,100,11.8))
+                     Max.Height.cm = c(60,100,11.8))
 
-
+iris.h <- full_join(iris, height)
 
 #####################################
 ##### Part 3: plots in ggplot2  #####
@@ -56,16 +49,20 @@ height <- data.frame(Species = c("virginica","setosa","versicolor"),
 plot(iris$Sepal.Length,iris$Sepal.Width)
 
 #3a. now make the same plot in ggplot
-
-
+ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width)) + 
+  geom_point()
+  
 #3b. make a scatter plot with ggplot and get rid of  busy grid lines
+ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width)) + 
+  geom_point() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
 
 #3c. make a scatter plot with ggplot, remove grid lines, add a title and axis labels, 
 #    show species by color, and make the point size proportional to petal length
-
-#####################################
-##### Question: how did         #####
-##### arguments differ between  #####
-##### plot and ggplot?          #####
-#####################################	
+ggplot(iris, aes(x=Sepal.Length, y=Sepal.Width, color = Species, size = Petal.Length)) + 
+  geom_point() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  labs(title = "Variation of Sepal Size") +
+  xlab("Sepal Length (cm)") +
+  ylab("Sepal Width (cm)")
