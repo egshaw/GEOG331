@@ -10,7 +10,8 @@
 #commented out for convenience of script.
 library(lubridate)
 
-#create a function. The names of the arguments for your function will be in parentheses. Everything in curly brackets will be run each time the function is run.
+#create a function. The names of the arguments for your function will be in parentheses. 
+#Everything in curly brackets will be run each time the function is run.
 assert <- function(statement,err.message){
   #if evaluates if a statement is true or false for a single item
   if(statement == FALSE){
@@ -22,29 +23,17 @@ assert <- function(statement,err.message){
 ######################################
 ##          Question 1              ##
 ######################################
-#The RH values are most accurate for humidity in the 25 to 65 percent range. The 
-# temperature range with the highest RH accuracy ranges from about 20 degrees C
-# to 60 degrees C. RH values are notably inaccurate at low temperatures (O degrees C)
-# and low humidity (0). Depending on the location of the sensor, this could give
-# a lot of NA values (e.g. this sensor would preform poorly in Hamilton, New York).
 
 ######################################
 ##          Question 2              ##
 ######################################
-#Section 3.3 states "If an instantaneous measurement is more than eight times the running
-#average, the instantaneous measurement is rejected. It is not reported as the maximum gust
-#or included in the data that are averaged over the output interval." This is designed 
-# to prevent signal errors in wind speed calculation, and relies on the assumption that 
-# a factor of 8 is too large a change within a 100 second time span. Although this is 
-# likely included because the sensor would return faulty measurements otherwise, it seems
-# likely that in gusty weather, it would be possible to exceed this measurement legitimately.
 
 
 #read in the data file
 #skip the first 3 rows since there is additional column info
 #specify the the NA is designated differently
 datW <- read.csv("Z:/students/egshaw/Data/bewkes/bewkes_weather.csv", 
-                  na.strings=c("#N/A"), skip=3, header=FALSE)
+                 na.strings=c("#N/A"), skip=3, header=FALSE)
 
 #get sensor info from file
 # this data table will contain all relevant units
@@ -62,12 +51,6 @@ print(datW[1,])
 ######################################
 ##          Question 3              ##
 ######################################
-# The argument "skip" ignores the first number of indicated lines. This is useful 
-#when the first few lines may contain headers and unit information that would otherwise
-#indicate to r to read the rest of the data as character data. nrows indicates the 
-#number of rows to read in. Thus, skip is exclusive and nrows is inclusive. The arg
-# header = FALSE indicates that the first row that will be read in contains data 
-#and does not contain row headers.
 
 #convert to standardized format
 #date format is m/d/y
@@ -102,12 +85,6 @@ plot(datW$DD, datW$air.temperature, pch=19, type="b", xlab = "Day of Year",
 
 #I'm going to make a new column to work with that indicates that I am conducting QAQC
 #because overwriting values should be done cautiously and can lead to confusing issues.
-#It can be particularly confusing when you are just learning R.
-#Here I'm using the ifelse function
-#the first argument is a logical statement to be evaluated as true or false on a vector
-#the second argument is the value that my air.tempQ1 column will be given if the statement
-#is true. The last value is the value that will be given to air.tempQ1 if the statement is false.
-#In this case it is just given the air temperature value
 datW$air.tempQ1 <- ifelse(datW$air.temperature < 0, NA, datW$air.temperature)
 
 #check the values at the extreme range of the data
@@ -123,12 +100,6 @@ datW[datW$air.tempQ1 > 33,]
 ######################################
 ##          Question 4              ##
 ######################################
-#Based on the wunderground data, our data seem pretty accurate. The measurements 
-#recorded in Rome for 6/22, 6/26, 7/1 and 7/2 are within a degree Celsius of our measurements
-# and seem to follow the same daily trends. The accuracy of the air temperature sensor does
-#not vary with humidity or solar radiation. So although relative humidity is higher for the 
-#days with low temperature, this does not indicate a higher chance of error. Overall, 
-# it seems like we can interprete these data as reliable.
 
 #plot precipitation and lightning strikes on the same plot
 #normalize lighting strikes to match precipitation
@@ -151,13 +122,11 @@ points(datW$DD[lightscale > 0], lightscale[lightscale > 0],
 ######################################
 assert(identical((datW$DD[lightscale > 0]), datW$DD[datW$lightning.acvitivy > 0]), 
        "indexing by lightscale is not equivalent to lightning.acvitivy")
-# Lightscale is not held in the dataframe. It is derived, however, from the values in
-#the dataframe that directly correspond to Decimal Dates. Thus both lightscale and 
-#datW$lightning.actvitivy are both valid indices for datW$DD. We can check this by
-#asserting that (datW$DD[lightscale > 0]) returns identical Decimal Dates to 
-#datW$DD[datW$lightning.acvitivy > 0]).Lightscale alters the scale of lightning 
-# activity values using the max precipitation value so that we can see both on 
-#the same plot. This does not alter the order in any way, so either index works.
+
+
+######################################
+##          Question 6              ##
+######################################
 
 #filter out storms air temperature measurements
 #filter all values with lightning that coincides with rainfall greater than 2mm or only rainfall over 5 mm.    
@@ -168,10 +137,115 @@ datW$air.tempQ2 <- ifelse(datW$precipitation  >= 2 & datW$lightning.acvitivy >0,
 #filter storms out of wind measurements and create a new column
 #filter all values with lightning that coincides with rainfall greater than 2mm or only rainfall over 5 mm. 
 datW$wind.speedQ1 <- ifelse(datW$precipitation  >= 2 & datW$lightning.acvitivy >0, NA,
-                          ifelse(datW$precipitation > 5, NA, datW$wind.speed))
+                            ifelse(datW$precipitation > 5, NA, datW$wind.speed))
 
-#plot wind speed when there is precipitation
-plot(datW$DD[datW$precipitation > 0], datW$wind.speedQ1[datW$precipitation > 0], xlab = "Day of Year", ylab = "Quality Controlled Wind Speed",
+#add a column that indicates whether or not a thunderstorm is happening
+datW$thunderstorm <- ifelse(datW$precipitation  >= 2 & datW$lightning.acvitivy >0, TRUE,
+                            ifelse(datW$precipitation > 5, TRUE, FALSE))
+
+#assert that when a thunderstorm is happening, wind speed is NA
+assert(identical(is.na(datW$wind.speedQ1), datW$thunderstorm), "QC Ineffective")
+
+#plot new wind speed values
+plot(datW$DD, datW$wind.speedQ1, xlab = "Day of Year", ylab = "Quality Controlled Wind Speed in m/s",
+     type="b", col = "lightsteelblue", pch = 20)
+
+######################################
+##          Question 7              ##
+######################################
+#determine the period of the data logger error
+which(is.na(datW$soil.moisture))
+which(is.na(datW$soil.temp))
+#there are NA values from the 1412th item till the end of our dataset for both soil
+#moisture and soil temperature.
+datW$timestamp[1412]
+#this correlates to July 11.
+#plot soil temp and moisture on the same plot.
+#make moisture relative to temperature to see both on the same plot
+moisturescale <- (max(datW$soil.temp, na.rm = TRUE)/max(datW$soil.moisture, na.rm = TRUE))*datW$soil.moisture
+
+plot(datW$DD[0:1412], datW$soil.temp[0:1412], xlab = "Day of Year", ylab = "Soil Temp Degrees C & Relative Moisture",
      type="n")
-points(datW$DD, datW$wind.speedQ1,
-       col = rgb(95/255,158/255,160/255,.5), pch = 15)
+
+points(datW$DD[0:1412], datW$soil.temp[0:1412], col = rgb(129/255, 49/255, 36/255, .5), pch = 20)
+points(datW$DD[0:1412], moisturescale[0:1412], col = "skyblue3", pch = 18)
+
+#nothing looks too out of the ordinary so far.
+#plot soil temp and air temp to identify possible patterns.
+
+plot(datW$DD[0:1412], datW$soil.temp[0:1412],main = "Soil & Air Temperature Data",
+     xlab = "Day of Year", ylab = "Temperature Degrees C", type="n")
+
+points(datW$DD[0:1412], datW$soil.temp[0:1412], col = rgb(129/255, 49/255, 36/255, .5), pch = 20)
+points(datW$DD[0:1412], datW$air.tempQ2[0:1412], col = rgb(0/255, 0/255, 0/255, .5), pch = 20)
+
+#from this plot, there does not seem to be anything out of the ordinary in the measurements
+#leading up to the blackout.
+
+######################################
+##          Question 8              ##
+######################################
+#install.packages("reactable")
+library(reactable)
+
+#start accruing necessary values
+#make a list of important averages
+col.order <- c(18, 19, 12, 13, 3)
+obs.count <- numeric(0)
+aves <- numeric(0)
+#determine and store the number of non NA values in each column of interest
+for (i in col.order){
+  obs.count <- append(obs.count, length(which(!is.na(datW[,i]))))
+  ifelse(i != 3 , aves <- append(aves, mean(datW[,i], na.rm = T)), aves <- append(aves, NA))
+}
+
+#define start and ending observation numbers to eliminate redundancy
+final = 2118
+logger.error = 1412
+#make a list of end observations to indicate time period in the final table
+end.obs <- c(datW$timestamp[final], datW$timestamp[final], datW$timestamp[logger.error],
+             datW$timestamp[logger.error], datW$timestamp[final])
+
+
+#find the value of total precip in mm
+total.precip <- sum(datW$precipitation)
+totals <- c(NA, NA, NA, NA, total.precip)
+
+#create a data frame with these values
+presen.table <- data.frame(obs.count, end.obs, aves, totals)
+#round the averages to the correct decimal place
+presen.table[1,3] <- round(presen.table[1,3], digits = 1)
+presen.table[2,3] <- round(presen.table[2,3], digits = 2)
+presen.table[3,3] <- round(presen.table[3,3], digits = 4)
+presen.table[4,3] <- round(presen.table[4,3], digits = 1)
+
+colnames(presen.table) <- c("Number of Observations", "Final Observation Date", "Average", "Total")
+rownames(presen.table) <- c("Air Temperature Degrees C", "Wind Speed m/s", "Soil Moisture m^3/m^3", "Soil Temperature Degrees C", "Precipitation (mm)")
+#return the table in a nicer and more editable form
+reactable(presen.table)
+
+######################################
+##          Question 9              ##
+######################################
+
+#make plots of soil moisture, air temperature, soil temperature, and precipitation
+par(mfrow = c(2,2))
+
+plot(datW$DD, datW$soil.moisture, main = "Summer 2018 Soil Moisture Levels", 
+     xlab = "Decimal Day", ylab = "Soil Moisture (m^3/m^3)", type="b", pch = 20, 
+     col = "cornflowerblue")
+plot(datW$DD, datW$air.temperature, main = "Summer 2018 Air Temperature Levels",
+     xlab = "Decimal Day", ylab = "Air Temperature Degrees C", type="b", pch = 20, 
+     col = "cornflowerblue")
+plot(datW$DD, datW$soil.temp, main = "Summer 2018 Soil Temperature Levels",
+     xlab = "Decimal Day", ylab = "Soil Temperature Degrees C", type="b", pch = 20, 
+     col = "cornflowerblue")
+plot(datW$DD, datW$precipitation, main = "Summer 2018 Precipitation Levels",
+     xlab = "Decimal Day", ylab = "Precipitation (mm)", type="b", pch = 20, 
+     col = "cornflowerblue")
+
+
+plot(datW$DD[0:1412], datW$soil.temp[0:1412],main = "Soil & Air Temperature Data",
+     xlab = "Day of Year", ylab = "Temperature Degrees C", type="n")
+
+points(datW$DD[0:1412], datW$soil.temp[0:1412], col = rgb(129/255, 49/255, 36/255, .5), pch = 20)
