@@ -39,7 +39,7 @@ for (i in 1:3){
 
 # hint: consider using a list, and also new vectors for regression variables
 
-#start work 3/11
+
 
 #####################################
 ##### Part 2: data in dplyr     #####
