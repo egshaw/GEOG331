@@ -51,3 +51,32 @@ datP$decYear <- ifelse(leap_year(datP$year),datP$year + (datP$decDay/366),
 #plot discharge
 plot(datD$decYear, datD$discharge, type="l", xlab="Year", 
      ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
+
+######################################
+###          Question 5            ###
+######################################
+#formatting for plot
+aveF <- aggregate(datD$discharge, by=list(datD$doy), FUN="mean")
+colnames(aveF) <- c("doy","dailyAve")
+sdF <- aggregate(datD$discharge, by=list(datD$doy), FUN="sd")
+colnames(sdF) <- c("doy","dailySD")
+
+#start new plot
+dev.new(width=8,height=8)
+
+#bigger margins
+par(mai=c(1,1,1,1))
+#make plot
+plot(aveF$doy,aveF$dailyAve, 
+     type="l", 
+     xlab="Year", 
+     ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")),
+     lwd=2,
+     ylim=c(0,90),
+     xaxs="i", yaxs ="i")#remove gaps from axes  
+#show standard deviation around the mean
+polygon(c(aveF$doy, rev(aveF$doy)),#x coordinates
+        c(aveF$dailyAve-sdF$dailySD,rev(aveF$dailyAve+sdF$dailySD)),#ycoord
+        col=rgb(100/255, 149/255, 236/255,.2), #color that is semi-transparent
+        border=NA#no border
+)
