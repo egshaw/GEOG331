@@ -77,23 +77,26 @@ plot(aveF$doy,aveF$dailyAve,
      ylim=c(0,90),
      xaxs="i", yaxs ="i",
      axes = FALSE)#remove gaps from axes 
-lines(datD$doy[datD$year == 2017], datD$discharge[datD$year == 2017],
-      col = "deeppink")
+lines(datD$discharge[datD$year == 2017],
+      col = "coral")
 
 polygon(c(aveF$doy, rev(aveF$doy)),#x coordinates
         c(aveF$dailyAve-sdF$dailySD,rev(aveF$dailyAve+sdF$dailySD)),#ycoord
-        col="aliceblue",  #rgb(100/255, 149/255, 236/255,.2),
+        col= rgb(0.392, 0.584, 0.929,.2),
         border=NA#no border
 )
 
-axis(1, seq(0,12, by=1200), #tick intervals
-     lab=seq(0,12, by=1200)) #tick labels
+Months <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+            "Nov", "Dec", "")
+
+axis(1, seq(0,366, by = 30), #tick intervals
+     lab= paste(Months)) #tick labels
 axis(2, seq(0,100, by=20),
      seq(0,100, by=20),
      las = 2)#show ticks at 90 degree angle
-legend("topright", c("mean","1 standard deviation"), #legend items
-       lwd=c(2,NA),#lines
-       col=c("black",rgb(0.392, 0.584, 0.929,.2)),#colors
-       pch=c(NA,15),#symbols
+legend("topright", c("mean","1 standard deviation", "2017 discharge data"), #legend items
+       lwd=c(2,NA, 2),#lines
+       col=c("black",rgb(0.392, 0.584, 0.929,.2), "coral"),#colors
+       pch=c(NA,15, NA),#symbols
        bty="n")#no legend border
 
