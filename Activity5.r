@@ -67,16 +67,33 @@ dev.new(width=8,height=8)
 #bigger margins
 par(mai=c(1,1,1,1))
 #make plot
+#show standard deviation around the mean
+
 plot(aveF$doy,aveF$dailyAve, 
      type="l", 
      xlab="Year", 
      ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")),
      lwd=2,
      ylim=c(0,90),
-     xaxs="i", yaxs ="i")#remove gaps from axes  
-#show standard deviation around the mean
+     xaxs="i", yaxs ="i",
+     axes = FALSE)#remove gaps from axes 
+lines(datD$doy[datD$year == 2017], datD$discharge[datD$year == 2017],
+      col = "deeppink")
+
 polygon(c(aveF$doy, rev(aveF$doy)),#x coordinates
         c(aveF$dailyAve-sdF$dailySD,rev(aveF$dailyAve+sdF$dailySD)),#ycoord
-        col=rgb(100/255, 149/255, 236/255,.2), #color that is semi-transparent
+        col="aliceblue",  #rgb(100/255, 149/255, 236/255,.2),
         border=NA#no border
 )
+
+axis(1, seq(0,12, by=1200), #tick intervals
+     lab=seq(0,12, by=1200)) #tick labels
+axis(2, seq(0,100, by=20),
+     seq(0,100, by=20),
+     las = 2)#show ticks at 90 degree angle
+legend("topright", c("mean","1 standard deviation"), #legend items
+       lwd=c(2,NA),#lines
+       col=c("black",rgb(0.392, 0.584, 0.929,.2)),#colors
+       pch=c(NA,15),#symbols
+       bty="n")#no legend border
+
