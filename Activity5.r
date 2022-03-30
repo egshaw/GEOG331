@@ -100,3 +100,12 @@ legend("topright", c("mean","1 standard deviation", "2017 discharge data"), #leg
        pch=c(NA,15, NA),#symbols
        bty="n")#no legend border
 
+######################################
+###          Question 7            ###
+######################################
+for (y in unique(datP$year)){
+  for (d in datP$doy[datP$year == y]){
+    while 
+  }
+  
+}
