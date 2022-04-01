@@ -2,7 +2,7 @@
 ###          Activity 5            ###
 ###        Elizabeth Shaw          ###
 ######################################
-
+install.packages("tidyverse")
 #load in lubridate
 library(lubridate)
 
@@ -103,7 +103,7 @@ legend("topright", c("mean","1 standard deviation", "2017 discharge data"), #leg
 ######################################
 ###          Question 7            ###
 ######################################
-
+library(dplyr)
 dat.comp <- aggregate(datP, by=list(datP$doy, datP$year), FUN = length)
 day.comp <- list()
 
@@ -153,34 +153,33 @@ for(i in 1:nrow(hydroP)){
 }
 #Making another hydrograph with data from winter day with all 24 hours of precipitation data
 #subsest discharge and precipitation within range of interest
-hydroD <- datD[datD$doy >= 12 & datD$doy < 15 & datD$year == 2011,]
-hydroP <- datP[datP$doy >= 12 & datP$doy < 15 & datP$year == 2011,]
-min(hydroD$discharge)#get minimum and maximum range of discharge to plot
-#go outside of the range so that it's easy to see high/low values
+hydroD.w <- datD[datD$doy >= 12 & datD$doy < 14 & datD$year == 2011,]
+hydroP.w <- datP[datP$doy >= 12 & datP$doy < 14 & datP$year == 2011,]
+
 #floor rounds down the integer
-yl <- floor(min(hydroD$discharge))-1
+yl <- floor(min(hydroD.w$discharge))-1
 #ceiling rounds up to the integer
-yh <- ceiling(max(hydroD$discharge))+1
+yh <- ceiling(max(hydroD.w$discharge))+1
 #minimum and maximum range of precipitation to plot
 pl <- 0
-pm <-  ceiling(max(hydroP$HPCP))+.5
+pm <-  ceiling(max(hydroP.w$HPCP))+.5
 #scale precipitation to fit on the 
-hydroP$pscale <- (((yh-yl)/(pm-pl)) * hydroP$HPCP) + yl
+hydroP.w$pscale <- (((yh-yl)/(pm-pl)) * hydroP$HPCP) + yl
 
 par(mai=c(1,1,1,1))
 #make plot of discharge
-plot(hydroD$decDay,
-     hydroD$discharge, 
+plot(hydroD.w$decDay,
+     hydroD.w$discharge, 
      type="l", 
      ylim=c(yl,yh), 
      lwd=2,
-     xlab="Day of year, 2008", 
+     xlab="Day of year, 2011", 
      ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
 #add bars to indicate precipitation 
 for(i in 1:nrow(hydroP)){
-  polygon(c(hydroP$decDay[i]-0.017,hydroP$decDay[i]-0.017,
-            hydroP$decDay[i]+0.017,hydroP$decDay[i]+0.017),
-          c(yl,hydroP$pscale[i],hydroP$pscale[i],yl),
+  polygon(c(hydroP.w$decDay[i]-0.017,hydroP.w$decDay[i]-0.017,
+            hydroP.w$decDay[i]+0.017,hydroP.w$decDay[i]+0.017),
+          c(yl,hydroP.w$pscale[i],hydroP.w$pscale[i],yl),
           col=rgb(0.392, 0.584, 0.929,.2), border=NA)
 }
 
@@ -200,5 +199,20 @@ ggplot(data= datD, aes(yearPlot,discharge)) +
 #Sort data by season using each season as a factor variable
 #The data is from North of the Equator in a four season climate so this analysis
 #should prove useful
+#subset data for 2016 and 2017
+datD.2016 <- datD[datD$year == 2016,]
+datD.2017 <- datD[datD$year == 2017,]
+leap.szn <- c(61, 153, 245, 336)
+szn <- c(60, 152, 24, 335)
+szn.name <- factor(c("Spring", "Summer", "Fall", "Winter"), 
+                   levels = c("Winter", "Spring", "Summer", "Fall",))
 
+datD.2016$sznF <- 0 
+for(i in datD.2016$doy){
+  if( datD.2016$doy[i] >= leap.szn[1] & datD.2016$doy[i] < leap.szn[2]) datD.2016$sznF <- 1
+  if( datD.2016$doy[i] >= leap.szn[2] & datD.2016$doy[i] < leap.szn[3]) datD.2016$sznF <- 2
+  if( datD.2016$doy[i] >= leap.szn[3] & datD.2016$doy[i] < leap.szn[4]) datD.2016$sznF <- 3
+}
+#create as factor 
+datD.2016$szn <- cut(datD.2016$sznF, 4, labels = c("Winter", "Spring", "Summer", "Fall"))
 
