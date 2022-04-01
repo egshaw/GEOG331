@@ -151,10 +151,10 @@ for(i in 1:nrow(hydroP)){
           c(yl,hydroP$pscale[i],hydroP$pscale[i],yl),
           col=rgb(0.392, 0.584, 0.929,.2), border=NA)
 }
-#Making another hydrograph with data from day 
+#Making another hydrograph with data from winter day with all 24 hours of precipitation data
 #subsest discharge and precipitation within range of interest
-hydroD <- datD[datD$doy >= 3 & datD$doy < 6 & datD$year == 2010,]
-hydroP <- datP[datP$doy >= 3 & datP$doy < 6 & datP$year == 2010,]
+hydroD <- datD[datD$doy >= 12 & datD$doy < 15 & datD$year == 2011,]
+hydroP <- datP[datP$doy >= 12 & datP$doy < 15 & datP$year == 2011,]
 min(hydroD$discharge)#get minimum and maximum range of discharge to plot
 #go outside of the range so that it's easy to see high/low values
 #floor rounds down the integer
