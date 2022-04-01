@@ -103,9 +103,102 @@ legend("topright", c("mean","1 standard deviation", "2017 discharge data"), #leg
 ######################################
 ###          Question 7            ###
 ######################################
-for (y in unique(datP$year)){
-  for (d in datP$doy[datP$year == y]){
-    while 
-  }
-  
+
+dat.comp <- aggregate(datP, by=list(datP$doy, datP$year), FUN = length)
+day.comp <- list()
+
+for (i in dat.comp$Group.1){
+  if (dat.comp$HPCP[i] == 24)
+  day.comp[[i]] <- dat.comp$Group.2[i]
+  else next
 }
+
+for (i in day.comp)
+  
+    day.comp$i <- dat.comp$Group.2
+day.comp <- append(day.comp, c(i, dat.comp$Group.1[dat.comp$HPCP == 24]))
+######################################
+###          Question 8            ###
+######################################
+#subsest discharge and precipitation within range of interest
+hydroD <- datD[datD$doy >= 248 & datD$doy < 250 & datD$year == 2011,]
+hydroP <- datP[datP$doy >= 248 & datP$doy < 250 & datP$year == 2011,]
+min(hydroD$discharge)#get minimum and maximum range of discharge to plot
+#go outside of the range so that it's easy to see high/low values
+#floor rounds down the integer
+yl <- floor(min(hydroD$discharge))-1
+#ceiling rounds up to the integer
+yh <- ceiling(max(hydroD$discharge))+1
+#minimum and maximum range of precipitation to plot
+pl <- 0
+pm <-  ceiling(max(hydroP$HPCP))+.5
+#scale precipitation to fit on the 
+hydroP$pscale <- (((yh-yl)/(pm-pl)) * hydroP$HPCP) + yl
+
+par(mai=c(1,1,1,1))
+#make plot of discharge
+plot(hydroD$decDay,
+     hydroD$discharge, 
+     type="l", 
+     ylim=c(yl,yh), 
+     lwd=2,
+     xlab="Day of year, 2011", 
+     ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
+#add bars to indicate precipitation 
+for(i in 1:nrow(hydroP)){
+  polygon(c(hydroP$decDay[i]-0.017,hydroP$decDay[i]-0.017,
+            hydroP$decDay[i]+0.017,hydroP$decDay[i]+0.017),
+          c(yl,hydroP$pscale[i],hydroP$pscale[i],yl),
+          col=rgb(0.392, 0.584, 0.929,.2), border=NA)
+}
+#Making another hydrograph with data from day 
+#subsest discharge and precipitation within range of interest
+hydroD <- datD[datD$doy >= 3 & datD$doy < 6 & datD$year == 2010,]
+hydroP <- datP[datP$doy >= 3 & datP$doy < 6 & datP$year == 2010,]
+min(hydroD$discharge)#get minimum and maximum range of discharge to plot
+#go outside of the range so that it's easy to see high/low values
+#floor rounds down the integer
+yl <- floor(min(hydroD$discharge))-1
+#ceiling rounds up to the integer
+yh <- ceiling(max(hydroD$discharge))+1
+#minimum and maximum range of precipitation to plot
+pl <- 0
+pm <-  ceiling(max(hydroP$HPCP))+.5
+#scale precipitation to fit on the 
+hydroP$pscale <- (((yh-yl)/(pm-pl)) * hydroP$HPCP) + yl
+
+par(mai=c(1,1,1,1))
+#make plot of discharge
+plot(hydroD$decDay,
+     hydroD$discharge, 
+     type="l", 
+     ylim=c(yl,yh), 
+     lwd=2,
+     xlab="Day of year, 2008", 
+     ylab=expression(paste("Discharge ft"^"3 ","sec"^"-1")))
+#add bars to indicate precipitation 
+for(i in 1:nrow(hydroP)){
+  polygon(c(hydroP$decDay[i]-0.017,hydroP$decDay[i]-0.017,
+            hydroP$decDay[i]+0.017,hydroP$decDay[i]+0.017),
+          c(yl,hydroP$pscale[i],hydroP$pscale[i],yl),
+          col=rgb(0.392, 0.584, 0.929,.2), border=NA)
+}
+
+######################################
+###          Question 9            ###
+######################################
+library(ggplot2)
+#specify year as a factor
+datD$yearPlot <- as.factor(datD$year)
+#make a boxplot
+ggplot(data= datD, aes(yearPlot,discharge)) + 
+  geom_boxplot()
+#make a violin plot
+ggplot(data= datD, aes(yearPlot,discharge)) + 
+  geom_violin()
+
+#Sort data by season using each season as a factor variable
+#The data is from North of the Equator in a four season climate so this analysis
+#should prove useful
+
+
