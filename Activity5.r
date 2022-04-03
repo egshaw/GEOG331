@@ -2,9 +2,10 @@
 ###          Activity 5            ###
 ###        Elizabeth Shaw          ###
 ######################################
-install.packages("tidyverse")
+#install.packages("tidyverse")
 #load in lubridate
 library(lubridate)
+library (dplyr)
 
 #read in streamflow data and precipitation data (in mm)
 datH <- read.csv("Z://students/egshaw/Data/streamflow/stream_flow_data.csv", 
@@ -103,20 +104,29 @@ legend("topright", c("mean","1 standard deviation", "2017 discharge data"), #leg
 ######################################
 ###          Question 7            ###
 ######################################
-library(dplyr)
+#aggregate Precipitation to see which days have 24 associated measurements
 dat.comp <- aggregate(datP, by=list(datP$doy, datP$year), FUN = length)
-day.comp <- list()
 
-for (i in dat.comp$Group.1){
-  if (dat.comp$HPCP[i] == 24)
-  day.comp[[i]] <- dat.comp$Group.2[i]
-  else next
+#this will be the final data frame
+days.comp <- tibble()
+#this is rewritten with each loop
+day.comp <- tibble()
+#this vector keeps track of the day
+days <- c(0)
+#this value keeps track of the year
+yr <- 2007
+#The for loop is looping over days of the year that have 24 hours of data. The if
+#statement makes sure those days are associated with the correct year. We then add
+#the i to days to keep track of it, filter for the current day, and add that data to
+#a larger data frame.
+for (i in dat.comp$Group.1[dat.comp$HPCP == 24]){
+  if (i < days[length(days)]) yr <- yr + 1
+  days[length(days)+ 1] <- i
+  day.comp <- datP %>%
+    filter(doy == i, year == yr)
+  days.comp <- rbind(days.comp, day.comp)
 }
 
-for (i in day.comp)
-  
-    day.comp$i <- dat.comp$Group.2
-day.comp <- append(day.comp, c(i, dat.comp$Group.1[dat.comp$HPCP == 24]))
 ######################################
 ###          Question 8            ###
 ######################################
