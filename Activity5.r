@@ -126,6 +126,16 @@ for (i in dat.comp$Group.1[dat.comp$HPCP == 24]){
     filter(doy == i, year == yr)
   days.comp <- rbind(days.comp, day.comp)
 }
+#The plot first plots all discharge values, and then adds points in a different 
+#color along the x-axis to showcase days with full precipitation measurements.
+ggplot (datD, aes(x = decYear, y = discharge)) +
+        geom_point(aes(color = "Discharge")) +
+        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              legend.title = element_text(paste("Legend"))) +
+        geom_point(data = days.comp, aes(x=decYear, y=0, 
+                                         color="Days with Precipitation Data")) +
+        labs(title="Distribution of Daily Discharge Data & Hourly Precipitation",
+       x ="Year", y = expression(paste("Discharge ft"^"3 ","sec"^"-1")))      
 
 ######################################
 ###          Question 8            ###
@@ -203,26 +213,56 @@ datD$yearPlot <- as.factor(datD$year)
 ggplot(data= datD, aes(yearPlot,discharge)) + 
   geom_boxplot()
 #make a violin plot
-ggplot(data= datD, aes(yearPlot,discharge)) + 
+ggplot(data = datD, aes(yearPlot,discharge)) + 
   geom_violin()
 
-#Sort data by season using each season as a factor variable
+#Sort data by season
 #The data is from North of the Equator in a four season climate so this analysis
 #should prove useful
-#subset data for 2016 and 2017
+#subset data for 2016
 datD.2016 <- datD[datD$year == 2016,]
-datD.2017 <- datD[datD$year == 2017,]
+#Calculate season breaks in day of year and record them for leap years and non-leap years
 leap.szn <- c(61, 153, 245, 336)
-szn <- c(60, 152, 24, 335)
-szn.name <- factor(c("Spring", "Summer", "Fall", "Winter"), 
-                   levels = c("Winter", "Spring", "Summer", "Fall",))
+nleap.szn <- c(60, 152, 244, 335)
+#Create a factor vector of season names (this would prove useful if you wanted
+# to translate the labels, for instance). Defining these as factors allows us to 
+#order the graph chronologically instead of alphabetically (although the winter data
+#bookends instead of truly coming first).
+szn.name <- factor(c("Spring", "Summer", "Fall", "Winter"),
+                   levels = "Winter", "Spring", "Summer", "Fall")
 
-datD.2016$sznF <- 0 
-for(i in datD.2016$doy){
-  if( datD.2016$doy[i] >= leap.szn[1] & datD.2016$doy[i] < leap.szn[2]) datD.2016$sznF <- 1
-  if( datD.2016$doy[i] >= leap.szn[2] & datD.2016$doy[i] < leap.szn[3]) datD.2016$sznF <- 2
-  if( datD.2016$doy[i] >= leap.szn[3] & datD.2016$doy[i] < leap.szn[4]) datD.2016$sznF <- 3
-}
-#create as factor 
-datD.2016$szn <- cut(datD.2016$sznF, 4, labels = c("Winter", "Spring", "Summer", "Fall"))
+#Mutate creates a new column in datD.2016 based on other columns, and case_when 
+#allows for a tidier combination of if statements. Together, these allow us to add
+#a column that lists season based on day of year and our previously defined bounds.
+datD.2016 <- datD.2016 %>% 
+  mutate(
+    szn = case_when(
+      doy >= leap.szn[1] & doy < leap.szn[2] ~ szn.name[1],
+      doy >= leap.szn[2] & doy < leap.szn[3] ~ szn.name[2],
+      doy >= leap.szn[3] & doy < leap.szn[4] ~ szn.name[3],
+      doy >= leap.szn[4] | doy < leap.szn[1] ~ szn.name[4],
+    )
+  )
+#It is now very simple to create a violin plot using this new column.
+ggplot(data = datD.2016, aes(szn,discharge, color = szn)) + 
+  geom_violin() +
+  labs(title="Distribution of Daily Discharge Rates in 2016",
+       x ="Season", y = expression(paste("Discharge ft"^"3 ","sec"^"-1"))) +
+  theme(legend.position = "none")
 
+#We can now do the same thing with 2017 data.
+datD.2017 <- datD[datD$year == 2017,]
+datD.2017 <- datD.2017 %>% 
+  mutate(
+    szn = case_when(
+      doy >= nleap.szn[1] & doy < nleap.szn[2] ~ szn.name[1],
+      doy >= nleap.szn[2] & doy < nleap.szn[3] ~ szn.name[2],
+      doy >= nleap.szn[3] & doy < nleap.szn[4] ~ szn.name[3],
+      doy >= nleap.szn[4] | doy < nleap.szn[1] ~ szn.name[4],
+    )
+  )
+ggplot(data = datD.2017, aes(szn,discharge, color = szn)) + 
+  geom_violin() +
+  labs(title="Distribution of Daily Discharge Rates in 2017",
+       x ="Season", y = expression(paste("Discharge ft"^"3 ","sec"^"-1"))) +
+  theme(legend.position = "none")
