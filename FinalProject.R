@@ -16,15 +16,12 @@ print(max(tree.pecan$Latitude))
 print(min(tree.pecan$Longitude))
 print(max(tree.pecan$Longitude))
 
-xfig <- tree.pecan$First_Yes_DOY[tree.pecan$Phenophase_Description == "Breaking leaf buds"]
-yfig <- tree.pecan$Elevation_in_Meters[tree.pecan$Phenophase_Description == "Breaking leaf buds"]
-
 # color = State[Phenophase_Description == "Breaking leaf buds"]
 fig1 <- ggplot(subset(tree.pecan, Phenophase_Description == "Breaking leaf buds"), 
-               aes(x = First_Yes_DOY, y = Elevation_in_Meters, color = State)) +
+               aes(x = First_Yes_DOY, y = Longitude, color = State)) +
         geom_point() +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
         labs(title = "Variation in Breaking Leaf Buds") +
         xlab("First Sighting of Breaking Leaf Buds (Day of Year)") +
-        ylab("Elevation in Meters")
+        ylab("Longitude")
 
