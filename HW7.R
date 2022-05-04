@@ -46,7 +46,7 @@ rsmask <- mask(rsdat,cloudsF)
 
 #set seed so samples always the same
 set.seed(12153)
-#randomly select the data in each dataset to be  used
+#randomly select the data in each dataset to be used
 sampleType <- rep("train",120)
 #samples to randomly convert to validation data
 sampleSamp <- sample(seq(1,120),60)
