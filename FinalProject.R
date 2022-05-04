@@ -28,13 +28,19 @@ nearby_station_ids <- transpose(nearby_station_ids)
 
 datW <- tibble(.rows = 4)
 for (i in 1:22){
-  if_else (is.na(nearby_station_ids[[1]][[i]]) = T, datW$i <- NA)
+  if_else (is.na(nearby_station_ids[[1]][[i]]), datW$i <- NA, next)
   datW$i <- ghcnd_search(nearby_station_ids[[1]][[i]], date_min = "2012-01-01", date_max = "2015-12-31", 
                          var = c("TMIN", "TMAX", "TAVG", "PSUN"))
 }
 
-# ghcnd_search("USW00013891", date_min = "2012-01-01", date_max = "2015-12-31", 
-            # var = c("TMIN", "TMAX", "TAVG", "PSUN"))
+#Need to figure out a way to have all my data in one place, going back to the drawing
+#board a bit to figure out a structure for this data
+
+station_13891 <- ghcnd_search("USW00013891", date_min = "2012-01-01", date_max = "2015-12-31", 
+                     var = c("TMIN", "TMAX", "TAVG", "PSUN"))
+station_13891 <- do.call(rbind, station_13891)
+
+#station_13891 <- bind_rows(station_13891)
 
 
 
