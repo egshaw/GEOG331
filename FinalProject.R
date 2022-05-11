@@ -101,33 +101,14 @@ colnames(tree.pecan_fruit)[29] <- c("longitude_wid")
 #nearby station ids dataframe to retrieve temperature data
 nearby_station_ids <- nearby_station_ids %>% distinct(id, .keep_all = T)
 
+datW <- ghcnd_search(nearby_station_ids$id, date_min = "2012-01-01", date_max = "2015-12-31", 
+                       var = c("TMIN", "TMAX"))
+#Turns out there is no percent sun data available with the given time frame and
+#station parameters, so I took it out of the data collection
+#also there is only average daily temperature data available from 2013, unfortunately
+#I will try to focus more on ranges than average to accomodate this shortcoming
+datW <- as_tibble(datW, .name_repair = "universal")
 
-
-
-
-for (i in 1:22){
-  if_else (is.na(nearby_station_ids[[1]][[i]]), datW$i <- NA, next)
-  datW$i <- ghcnd_search(nearby_station_ids[[1]][[i]], date_min = "2012-01-01", date_max = "2015-12-31", 
-                         var = c("TMIN", "TMAX", "TAVG", "PSUN"))
-}
-
-#Need to figure out a way to have all my data in one place, going back to the drawing
-#board a bit to figure out a structure for this data
-
-station_13891 <- ghcnd_search("USW00013891", date_min = "2012-01-01", date_max = "2015-12-31", 
-                     var = c("TMIN", "TMAX", "TAVG", "PSUN"))
-station_13891 <- do.call(rbind, station_13891)
-
-#station_13891 <- bind_rows(station_13891)
-
-
-
-# color = State[Phenophase_Description == "Breaking leaf buds"]
-fig1 <- ggplot(subset(tree.pecan, Phenophase_Description == "Breaking leaf buds"), 
-               aes(x = First_Yes_DOY, y = Longitude, color = State)) +
-        geom_point() +
-        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-        labs(title = "Variation in Breaking Leaf Buds") +
-        xlab("First Sighting of Breaking Leaf Buds (Day of Year)") +
-        ylab("Longitude")
-
+#Let's graph temperature data for the tallahasse station, because it is the 
+#closest station to three pecans
+tal_plot <- ggplot(subset(datW))
