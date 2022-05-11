@@ -34,7 +34,8 @@ elev_fruit <- ggplot(subset(tree.pecan, Phenophase_Description == "Fruits"),
 #there may be a relationship with longitude and elevation, but it's tricky to tell with such little data
 #lets add the other phenophase descriptions that have to do with fruiting and look again
   
-for (i in c("Fruits", "Recent fruit or seed drop", "Ripe fruits")){
+tree.pecan_fruit <- subset(tree.pecan, Phenophase_Description == "Fruits")
+for (i in c("Recent fruit or seed drop", "Ripe fruits")){
   temp.df <- tree.pecan %>% subset(Phenophase_Description == i)
   tree.pecan_fruit <- full_join(tree.pecan_fruit, temp.df)
 }
@@ -120,38 +121,39 @@ datW <- full_join(datWtmin, datWtmax, by = c("id", "date"))
 datW$tmin <- datW$tmin / 10
 datW$tmax <- datW$tmax / 10
 
-#Let's graph temperature data for the Tallahassee station, because it is the 
-#closest station to three pecans
-tal_plot <- ggplot(subset(datW, id == "USW00093805"), aes(x = date, y = tmax)) +
+#Let's graph temperature data for the Knoxville station because it is closest to 
+#the most phenophase measurements
+knox_plot <- ggplot(subset(datW, id == "USW00013891"), aes(x = date, y = tmax)) +
               geom_ribbon(aes(ymin = tmin, ymax = tmax), alpha=0.3,       #transparency
                           linetype=1,      #solid, dashed or other line types
                           colour="grey70", #border line color
                           size=.2,          #border line size
                           fill="orange") +    #fill color) 
               theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-              labs(title = "Temperature variation in Tallahasse") +
+              labs(title = "Temperature variation in Knoxville") +
               xlab("Time") +
               ylab("Daily Minimum & Maximum Temperature (in Celsius)")
 
 datW$year <- year(datW$date)
-tree.pecan_fruit$First_Yes_Julian_Date <- as_date(tree.pecan_fruit$First_Yes_Julian_Date, origin = structure(-2440588, class = "Date"))
-
+tree.pecan_fruit$First_Yes_Julian_Date <- as_date(tree.pecan_fruit$First_Yes_Julian_Date,
+                                                  origin = structure(-2440588, class = "Date"))
+colnames(tree.pecan_fruit)[18] <- c("date")
 #it's clear these data are very noisy! there is a lot of variation
-#let's look one year at a time
-par(mfrow = c(2,2)) 
-for (i in c(2012, 2013, 2014, 2015)){
-  out <- ggplot(subset(datW, id == "USW00093805" & year == i), aes(x = date, y = tmax)) +
-         geom_ribbon(aes(ymin = tmin, ymax = tmax), alpha=0.3,       #transparency
+#let's look just at 2012 and overlay phenophase because all the phenophase data is in 2012
+datknox <- subset(datW, id == "USW00013891")
+datknox$phenopase 
+as_tibble(tree.pecan_fruit$id)
+test <- full_join(datW, tree.pecan_fruit, 
+                  by = c("date", "id"))
+knox_2012 <- ggplot(subset(datknox, year == 2012), aes(x = date, y = tmax)) +
+              geom_ribbon(aes(ymin = tmin, ymax = tmax), alpha=0.3,       #transparency
                 linetype=1,      #solid, dashed or other line types
                 colour="grey70", #border line color
                 size=.2,          #border line size
                 fill="orange") +    #fill color) 
          theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-         labs(title = "Temperature variation in Tallahasse") +
-         xlab("Time") +
+         labs(title = "Temperature variation and Pecan Phenophase in Knoxville") +
+         xlab("Day of Year") +
          ylab("Daily Minimum & Maximum Temperature (in Celsius)") +
-      #   geom_area(data = df2, aes(x = step, y = 1000 * event), 
+         geom_area(data = tree.pecan_fruit, aes(x = First_Yes_Julian_Date, y = 1000 * Elevation_in_Meters), 
               inherit.aes = FALSE, fill = "red", alpha = 0.2)
-
-   print(out)
-}
