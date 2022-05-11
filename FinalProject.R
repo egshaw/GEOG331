@@ -88,9 +88,12 @@ nearby_station_ids <- meteo_nearby_stations(lat_lon_df = lat_lon_df, station_dat
 nearby_station_ids <- transpose(nearby_station_ids)
 #lists are tricky so lets turn this into a data frame
 nearby_station_ids <- as_tibble(nearby_station_ids)
-#Latitude and longitude should act like our original lat/lon columns
+#Latitude and longitude should act like our original lat/lon columns (as well as the rest)
 nearby_station_ids$latitude <- as.double(nearby_station_ids$latitude)
 nearby_station_ids$longitude <- as.double(nearby_station_ids$longitude)
+nearby_station_ids$id <- as.character(nearby_station_ids$id)
+nearby_station_ids$name <- as.character(nearby_station_ids$name)
+nearby_station_ids$distance <- as.numeric(nearby_station_ids$distance)
 #we add the pecan id as a key variable
 nearby_station_ids$pecanid <- lat_lon_df$id
 #finally we can join the two together
@@ -140,11 +143,11 @@ tree.pecan_fruit$First_Yes_Julian_Date <- as_date(tree.pecan_fruit$First_Yes_Jul
 colnames(tree.pecan_fruit)[18] <- c("date")
 #it's clear these data are very noisy! there is a lot of variation
 #let's look just at 2012 and overlay phenophase because all the phenophase data is in 2012
-datknox <- subset(datW, id == "USW00013891")
-datknox$phenopase 
-as_tibble(tree.pecan_fruit$id)
-test <- full_join(datW, tree.pecan_fruit, 
+datfull <- full_join(datW, tree.pecan_fruit, 
                   by = c("date", "id"))
+datknox <- subset(datfull, id == "USW00013891")
+datknox$isfruit <- ifelse(is.na(datknox$Phenophase_Description), 0, 1)
+ylim <- max(datknox$tmax) + 5
 knox_2012 <- ggplot(subset(datknox, year == 2012), aes(x = date, y = tmax)) +
               geom_ribbon(aes(ymin = tmin, ymax = tmax), alpha=0.3,       #transparency
                 linetype=1,      #solid, dashed or other line types
@@ -155,5 +158,6 @@ knox_2012 <- ggplot(subset(datknox, year == 2012), aes(x = date, y = tmax)) +
          labs(title = "Temperature variation and Pecan Phenophase in Knoxville") +
          xlab("Day of Year") +
          ylab("Daily Minimum & Maximum Temperature (in Celsius)") +
-         geom_area(data = tree.pecan_fruit, aes(x = First_Yes_Julian_Date, y = 1000 * Elevation_in_Meters), 
-              inherit.aes = FALSE, fill = "red", alpha = 0.2)
+         ylim(0, ylim) +
+         geom_area(aes(x = date, y = (ylim + 5) * isfruit), 
+              fill = "red", alpha = 0.2)
