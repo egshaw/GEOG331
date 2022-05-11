@@ -5,6 +5,7 @@ library("terra")
 library("tidyverse")
 library("ggplot2")
 library ("rnoaa")
+library("lubridate")
 tree.pecan <- read.csv("Z:/students/egshaw/Data/Final Project Data/individual_phenometrics_data.csv",
                        header = T)
 
@@ -103,12 +104,54 @@ nearby_station_ids <- nearby_station_ids %>% distinct(id, .keep_all = T)
 
 datW <- ghcnd_search(nearby_station_ids$id, date_min = "2012-01-01", date_max = "2015-12-31", 
                        var = c("TMIN", "TMAX"))
+
 #Turns out there is no percent sun data available with the given time frame and
 #station parameters, so I took it out of the data collection
 #also there is only average daily temperature data available from 2013, unfortunately
-#I will try to focus more on ranges than average to accomodate this shortcoming
-datW <- as_tibble(datW, .name_repair = "universal")
+#I will try to focus more on ranges than average to accommodate this shortcoming
 
-#Let's graph temperature data for the tallahasse station, because it is the 
+#ghcnd_search returns a list of two dataframes which we can separate by variable
+#and join to a single tibble
+datWtmin <- as_tibble(datW$tmin)
+datWtmax <- as_tibble(datW$tmax)
+datW <- full_join(datWtmin, datWtmax, by = c("id", "date"))
+
+#ghcnd provides temperature data in tenths of degrees celsius, which is bizarre
+datW$tmin <- datW$tmin / 10
+datW$tmax <- datW$tmax / 10
+
+#Let's graph temperature data for the Tallahassee station, because it is the 
 #closest station to three pecans
-tal_plot <- ggplot(subset(datW))
+tal_plot <- ggplot(subset(datW, id == "USW00093805"), aes(x = date, y = tmax)) +
+              geom_ribbon(aes(ymin = tmin, ymax = tmax), alpha=0.3,       #transparency
+                          linetype=1,      #solid, dashed or other line types
+                          colour="grey70", #border line color
+                          size=.2,          #border line size
+                          fill="orange") +    #fill color) 
+              theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+              labs(title = "Temperature variation in Tallahasse") +
+              xlab("Time") +
+              ylab("Daily Minimum & Maximum Temperature (in Celsius)")
+
+datW$year <- year(datW$date)
+tree.pecan_fruit$First_Yes_Julian_Date <- as_date(tree.pecan_fruit$First_Yes_Julian_Date, origin = structure(-2440588, class = "Date"))
+
+#it's clear these data are very noisy! there is a lot of variation
+#let's look one year at a time
+par(mfrow = c(2,2)) 
+for (i in c(2012, 2013, 2014, 2015)){
+  out <- ggplot(subset(datW, id == "USW00093805" & year == i), aes(x = date, y = tmax)) +
+         geom_ribbon(aes(ymin = tmin, ymax = tmax), alpha=0.3,       #transparency
+                linetype=1,      #solid, dashed or other line types
+                colour="grey70", #border line color
+                size=.2,          #border line size
+                fill="orange") +    #fill color) 
+         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+         labs(title = "Temperature variation in Tallahasse") +
+         xlab("Time") +
+         ylab("Daily Minimum & Maximum Temperature (in Celsius)") +
+      #   geom_area(data = df2, aes(x = step, y = 1000 * event), 
+              inherit.aes = FALSE, fill = "red", alpha = 0.2)
+
+   print(out)
+}
