@@ -123,6 +123,11 @@ datW <- full_join(datWtmin, datWtmax, by = c("id", "date"))
 #ghcnd provides temperature data in tenths of degrees celsius, which is bizarre
 datW$tmin <- datW$tmin / 10
 datW$tmax <- datW$tmax / 10
+datfull <- full_join(datW, tree.pecan_fruit, 
+                     by = c("date", "id"))
+#removing temperature values that did not pass QC
+datfull$tmin[datfull$qflag.x != " "] <- NA
+datfull$tmax[datfull$qflag.y != " "] <- NA
 
 #Let's graph temperature data for the Knoxville station because it is closest to 
 #the most phenophase measurements
@@ -143,8 +148,6 @@ tree.pecan_fruit$First_Yes_Julian_Date <- as_date(tree.pecan_fruit$First_Yes_Jul
 colnames(tree.pecan_fruit)[18] <- c("date")
 #it's clear these data are very noisy! there is a lot of variation
 #let's look just at 2012 and overlay phenophase because all the phenophase data is in 2012
-datfull <- full_join(datW, tree.pecan_fruit, 
-                  by = c("date", "id"))
 datknox <- subset(datfull, id == "USW00013891")
 datknox$isfruit <- ifelse(is.na(datknox$Phenophase_Description), 0, 1)
 maxyk <- max(datknox$tmax) + 5
