@@ -12,21 +12,21 @@ tree.pecan <- read.csv("Z:/students/egshaw/Data/Final Project Data/individual_ph
 #see if there are spatial variations in fruiting based on given information
 long_fruit <- ggplot(subset(tree.pecan, Phenophase_Description == "Fruits"), 
                aes(x = First_Yes_DOY, y = Longitude, color = State)) +
-               geom_point() +
+               geom_jitter() +
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
                labs(title = "Variation in Fruiting") +
                xlab("First Sighting of Fruits (Day of Year)") +
                ylab("Longitude")
 lat_fruit <- ggplot(subset(tree.pecan, Phenophase_Description == "Fruits"), 
                aes(x = First_Yes_DOY, y = Latitude, color = State)) +
-               geom_point() +
+               geom_jitter() +
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
                labs(title = "Variation in Fruiting") +
                xlab("First Sighting of Fruits (Day of Year)") +
                ylab("Latitude")
 elev_fruit <- ggplot(subset(tree.pecan, Phenophase_Description == "Fruits"), 
                aes(x = First_Yes_DOY, y = Elevation_in_Meters, color = State)) +
-               geom_point() +
+               geom_jitter() +
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
                labs(title = "Variation in Fruiting") +
                xlab("First Sighting of Fruits (Day of Year)") +
@@ -42,14 +42,14 @@ for (i in c("Recent fruit or seed drop", "Ripe fruits")){
 
 long_fruit_all <- ggplot(tree.pecan_fruit, 
                      aes(x = First_Yes_DOY, y = Longitude, color = State, shape = Phenophase_Description)) +
-                     geom_point() +
+                     geom_jitter() +
                      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
                      labs(title = "Variation in Fruiting") +
                      xlab("First Sighting of Fruit Phenophase (Day of Year)") +
                      ylab("Longitude")
 lat_fruit_all <- ggplot(tree.pecan_fruit, 
                      aes(x = First_Yes_DOY, y = Longitude, color = State, shape = Phenophase_Description)) +
-                     geom_point() +
+                     geom_jitter() +
                      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
                      labs(title = "Variation in Fruiting") +
                      xlab("First Sighting of Fruit Phenophase (Day of Year)") +
@@ -177,5 +177,5 @@ Lvilplot <- ggplot(datlvil, aes(x = date, y = tmax)) +
               xlab("Time") +
               ylab("Daily Minimum & Maximum Temperature (in Celsius)") +
               coord_cartesian(ylim = c(-20, 40)) +
-              geom_ribbon(aes(ymin = -30, ymax = ((maxyl + 25) * isfruit)-20), 
+              geom_ribbon(aes(ymin = -31, ymax = ((maxyl + 25) * isfruit)-20), 
               fill = "red", alpha = 0.2)
