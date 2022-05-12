@@ -147,17 +147,35 @@ datfull <- full_join(datW, tree.pecan_fruit,
                   by = c("date", "id"))
 datknox <- subset(datfull, id == "USW00013891")
 datknox$isfruit <- ifelse(is.na(datknox$Phenophase_Description), 0, 1)
-ylim <- max(datknox$tmax) + 5
+maxyk <- max(datknox$tmax) + 5
 knox_2012 <- ggplot(subset(datknox, year == 2012), aes(x = date, y = tmax)) +
               geom_ribbon(aes(ymin = tmin, ymax = tmax), alpha=0.3,       #transparency
                 linetype=1,      #solid, dashed or other line types
                 colour="grey70", #border line color
                 size=.2,          #border line size
                 fill="orange") +    #fill color) 
-         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-         labs(title = "Temperature variation and Pecan Phenophase in Knoxville") +
-         xlab("Day of Year") +
-         ylab("Daily Minimum & Maximum Temperature (in Celsius)") +
-         ylim(0, ylim) +
-         geom_area(aes(x = date, y = (ylim + 5) * isfruit), 
+              theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+              labs(title = "Temperature Variation and Pecan Phenophase in Knoxville") +
+              xlab("Day of Year") +
+              ylab("Daily Minimum & Maximum Temperature (in Celsius)") +
+              coord_cartesian(ylim = c(-10, 45)) +
+              geom_ribbon(aes(ymin = -20, ymax = ((maxyk + 25) * isfruit)-20), 
+                fill = "red", alpha = 0.2)
+#it's pretty hard to glean any patterns from this, let's look at another site
+#setting up a chart for Louisville
+datlvil <- subset(datfull, id == "USW00093821" & year != 2012)
+datlvil$isfruit <- ifelse(is.na(datlvil$Phenophase_Description), 0, 1)
+maxyl <- max(datlvil$tmax) + 5
+Lvilplot <- ggplot(datlvil, aes(x = date, y = tmax)) +
+              geom_ribbon(aes(ymin = tmin, ymax = tmax), alpha=0.3,       #transparency
+              linetype=1,      #solid, dashed or other line types
+              colour="grey70", #border line color
+              size=.2,          #border line size
+              fill="orange") +    #fill color) 
+              theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+              labs(title = "Temperature & Phenophase Variation in Louisville") +
+              xlab("Time") +
+              ylab("Daily Minimum & Maximum Temperature (in Celsius)") +
+              coord_cartesian(ylim = c(-20, 40)) +
+              geom_ribbon(aes(ymin = -30, ymax = ((maxyl + 25) * isfruit)-20), 
               fill = "red", alpha = 0.2)
